@@ -1,5 +1,5 @@
 import express from "express";
-import { createNotes, getAllNotes ,deleteNote,updateNotes,getSingleNote} from "../controllers/noteControllers.js";
+import { createNotes,getSingleNote, getAllNotes ,deleteNote,updateNotes, getEditSingleNote} from "../controllers/noteControllers.js";
 const Router = express.Router();
 
 Router.route('/')
@@ -7,10 +7,11 @@ Router.route('/')
 .post(createNotes)
 
 Router.get('/create',(req,res)=>{
-    // console.log('create krne')
+ 
     return res.render('notes/create')
 })
 
+Router.get('/edit/:noteid', getEditSingleNote)
 Router.route('/:noteid')
 .get(getSingleNote)
 .delete(deleteNote)

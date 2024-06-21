@@ -61,7 +61,7 @@
 
     }
     .login_container form div textarea{
-        height: 100px;
+        height: 200px;
     }
     .login_container form div button{
         font-size: 22px;
@@ -145,6 +145,7 @@
           })
           .then(response => response.json())
           .then(data => {
+            // console.log(data);
             if (data.success) {
               alert('Notes updated successfully!');
               

@@ -60,6 +60,61 @@ const getSingleNote = async (req, res) => {
       //     note : note
       // })
       
+      return res.render(`notes/note`, {
+        note: note,
+      });
+    }
+   catch (error) {
+    res.status(500).json({
+      success: false,
+      ok: false,
+      message: "Error finding cookie",
+      error,
+    });
+  }
+};
+const getEditSingleNote = async (req, res) => {
+  const noteId = req.params.noteid;
+  
+  const user = req.user;
+ 
+  try {
+    if (!noteId) {
+      return res.status(400).json({
+        ok: false,
+        success: false,
+        message: "NoteId Missing",
+      });
+    }
+    
+    const note = await Note.findById(noteId);
+   
+    if (!note) {
+      return res.status(404).json({
+        ok: false,
+        success: false,
+        message: "Note not found at this id",
+      });
+    }
+    // console.log('----',note kuc der k liue);
+    
+    if (note.userId.toString() !== user._id.toString()) {
+      
+      return res.status(403).json({
+        ok: false,
+        success: false,
+        message: "Unauthorised user cannot acess this note",
+      });
+    }
+      // }
+      
+      // return res.status(200).json({
+      //     ok : true,
+      //     success : true,
+      //     message: "Note deleted successfully.",
+      //     note : note
+      // })
+      
       return res.render(`notes/edit`, {
         note: note,
       });
@@ -161,6 +216,7 @@ const deleteNote = async (req, res) => {
   }
 };
 const updateNotes = async (req, res) => {
+  // console.log('req aai');
   const noteId = req.params.noteid;
   const user = req.user;
   // console.log(noteId);
@@ -211,4 +267,4 @@ const updateNotes = async (req, res) => {
     // return res.redirect('notes/index')
   } catch (error) {}
 };
-export { getAllNotes, createNotes, deleteNote, updateNotes, getSingleNote };
+export { getAllNotes, createNotes, deleteNote, updateNotes,getSingleNote, getEditSingleNote };
