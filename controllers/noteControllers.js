@@ -77,12 +77,16 @@ const createNotes = async (req, res) => {
   const { title, content } = req.body;
   const user = req.user;
   // console.log(user);
-  if (!title || !content) {
-    return res.status(400).json({
-      success: false,
-      ok: false,
-      error: "Input fields missing",
-    });
+  
+  if (!title.trim() || !content.trim()) {
+    // return res.status(400).json({
+    //   success: false,
+    //   ok: false,
+    //   error: "Input fields missing",
+    // });
+    return  res.render('notes/create', {
+      message: "Title or Content missing"
+    })
   }
 
   try {
@@ -169,6 +173,13 @@ const updateNotes = async (req, res) => {
         message: "NoteId Missing",
       });
     }
+    if(!title.trim() || !content.trim()){
+      return res.status(400).json({
+        ok: false,
+        success: false,
+        message: "Title or content missing",
+      });
+    }
     const note = await Note.findById(noteId);
     if (!note) {
       return res.status(404).json({
@@ -185,8 +196,8 @@ const updateNotes = async (req, res) => {
         })
     }
     // Update the note fields
-    note.title = title || note.title;
-    note.content = content || note.content;
+    note.title = title ;
+    note.content = content ;
 
     // Save the updated note
     const updatedNote = await note.save();
