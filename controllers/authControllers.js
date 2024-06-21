@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { hashingPassword, checkPassword } from "../utility/passwordHashing.js";
-import { generateToken} from "../utility/tokenGenerating.js";
+import { generateToken } from "../utility/tokenGenerating.js";
 
 const signupController = async (req, res) => {
-  
   try {
     const { email, password } = req.body;
 
@@ -15,18 +14,18 @@ const signupController = async (req, res) => {
         error: "Input fields missing",
       });
     }
+
     const checkUserExisting = await User.findOne({ email });
     // if user found then we have to return user already exist
     if (checkUserExisting) {
-   
       // return res.status(400).json({
       //   success: false,
       //   ok: false,
       //   error: "User already exist",
       // });
-      return res.render('auth/register',{
-        message: 'User already exist'
-      })
+      return res.render("auth/register", {
+        message: "User already exist",
+      });
     }
 
     // user not found saving it
@@ -36,13 +35,13 @@ const signupController = async (req, res) => {
       password: hashedPassword,
     });
     await newUser.save();
-    
+
     // res.status(201).json({
     //   success: true,
     //   ok: true,
     //   message: "User registered successfully!",
     // });
-    res.redirect('login')
+    res.redirect("login");
   } catch (error) {
     // console.log(`Error while Registering : ${error}`);
     res.status(500).json({
@@ -55,10 +54,7 @@ const signupController = async (req, res) => {
   // console.log('Auth Register Route');
 };
 const loginController = async (req, res) => {
-  
-  
   try {
-    
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -69,21 +65,24 @@ const loginController = async (req, res) => {
       });
     }
     const isValidUser = await checkPassword(email, password);
-
-    if (!isValidUser) {
+    // console.log(isValidUser);
+    if (!isValidUser.success) {
       // return res.status(401).json({
       //   success: false,
       //   ok: false,
       //   message: "Wrong email or password",
       // });
-      return res.render('auth/login',{
-        message : "Wrong email or password",
-      })
+      return res.render("auth/login", {
+        message: isValidUser.msg,
+      });
     }
-    const token= await generateToken(email);
+    
+  
+    
+    const token = await generateToken(email);
     const oneDays = 1 * 24 * 60 * 60 * 1000;
     res.cookie("token", token, { maxAge: oneDays });
-    res.redirect('../notes');
+    res.redirect("../notes");
   } catch (error) {
     res
       .status(500)

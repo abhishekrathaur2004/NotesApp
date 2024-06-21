@@ -22,11 +22,24 @@ const checkPassword = async(email, password)=>{
   try {
     const userExists = await User.findOne({email});
     if(!userExists){
-      return false;
+      return {
+        success : false,
+        msg : "User not found"
+      }
     }
     
     const passwordMatch = await bcrypt.compare(password.toString(),userExists.password);
-    return passwordMatch;
+    if(passwordMatch){
+      return {
+        success : true,
+      }
+    }
+    else{
+      return {
+        success : false,
+        msg : "Password does not match"
+      }
+    }
 
   } catch (error) {
     console.log(error);
