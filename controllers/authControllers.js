@@ -19,11 +19,14 @@ const signupController = async (req, res) => {
     // if user found then we have to return user already exist
     if (checkUserExisting) {
    
-      return res.status(400).json({
-        success: false,
-        ok: false,
-        error: "User already exist",
-      });
+      // return res.status(400).json({
+      //   success: false,
+      //   ok: false,
+      //   error: "User already exist",
+      // });
+      return res.render('auth/register',{
+        message: 'User already exist'
+      })
     }
 
     // user not found saving it
@@ -68,11 +71,14 @@ const loginController = async (req, res) => {
     const isValidUser = await checkPassword(email, password);
 
     if (!isValidUser) {
-      return res.status(401).json({
-        success: false,
-        ok: false,
-        message: "Wrong email or password",
-      });
+      // return res.status(401).json({
+      //   success: false,
+      //   ok: false,
+      //   message: "Wrong email or password",
+      // });
+      return res.render('auth/login',{
+        message : "Wrong email or password",
+      })
     }
     const token= await generateToken(email);
     const oneDays = 1 * 24 * 60 * 60 * 1000;
