@@ -5,8 +5,9 @@ import { generateToken } from "../utility/tokenGenerating.js";
 
 const signupController = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password ,cnfpassword} = req.body;
 
+  
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -28,6 +29,11 @@ const signupController = async (req, res) => {
       });
     }
 
+    if(password !== cnfpassword){
+      return res.render("auth/register", {
+        message: "Password and Confirm Password is not same",
+      });
+    }
     // user not found saving it
     const hashedPassword = await hashingPassword(password);
     const newUser = new User({
