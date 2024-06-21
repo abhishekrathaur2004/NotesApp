@@ -159,7 +159,7 @@ const deleteNote = async (req, res) => {
 const updateNotes = async (req, res) => {
   const noteId = req.params.noteid;
   const user = req.user;
-  console.log(noteId);
+  // console.log(noteId);
   const { title, content } = req.body;
   try {
     if (!noteId) {
