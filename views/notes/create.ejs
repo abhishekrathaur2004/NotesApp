@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet"  href="/public/css/style.css"/> -->
+    <title>Create</title>
+  </head>
+  <style>
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    body{
+        background-color: rgb(244, 241, 241);
+    }
+    .navbar-heading{
+        padding-top: 4rem;
+        padding-left: 3rem;
+       
+        border-bottom: 1px solid gray;
+        text-transform: capitalize;
+        padding-bottom: 1rem;
+        text-align: center;
+    }
+    .msg{
+      padding: 12px 10px;
+      text-align: right;
+      font-size: 22px;
+      text-decoration: underline;
+    }
+    .navbar-heading h2{
+        font-size: 2.1rem;
+        color: brown;
+    }
+    .login_container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        width: 100%;
+        height: 67vh;
+    }
+    .login_container h1{
+        font-size: 27px;
+        font-weight: 400;
+        text-transform: capitalize;
+    }
+    .login_container form{
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        min-height: 400px;
+        min-width: 400px;
+    }
+    .login_container form div label{
+        font-size: 19px;
+    }
+    .login_container form div input,textarea{
+        padding: .7rem;
+        font-size: 20px;
+        width: 100%;
+
+    }
+    .login_container form div textarea{
+        height: 100px;
+    }
+    .login_container form div button{
+        font-size: 22px;
+        cursor: pointer;
+        width: 100%;
+        padding: .6rem;
+        background-color: rgba(36, 94, 176, 0.869);
+        border-radius: 10px;
+        color: white;
+        border: white;
+    }
+    .login_container form div button:hover{
+        background-color: rgb(7, 62, 144);
+    }
+    /* .goback button{
+      border: none;
+      text-decoration: underline;
+      font-size: 22px;
+    } */
+    .goback {
+    display: flex;
+    justify-content: center; /* Center the button horizontally */
+    margin-top: 20px; /* Add some space at the top */
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px; /* Add padding to the button */
+    font-size: 16px; /* Set the font size */
+    color: #fff; /* Set the text color */
+    background-color: #4CAF50; /* Set the background color */
+    border: none; /* Remove the border */
+    border-radius: 5px; /* Round the corners */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* Remove underline from text */
+    transition: background-color 0.3s; /* Add transition for hover effect */
+  }
+
+  </style>
+  <body>
+    <div class="navbar-heading">
+        <p>Ready to start taking notes?</p>
+        <h2 >Manage your notes here</h2>
+    </div>
+    <div class="msg">
+      <% if(typeof message !== 'undefined'){ %>
+        <p> <%= message%> <br/> <a href="">See Notes</a></p>
+      <% } %>
+    </div>
+    <div class="login_container">
+      <h1>Add your note here</h1>
+      <form action="/api/v1/notes" method="post">
+        <div>
+            <label for="title">Title of note</label>
+          <input type="text" id="title" name="title" placeholder="" required />
+        </div>
+        <div>
+            <label for="content">Content</label>
+            <textarea name="content" id="content" required></textarea>
+        </div>
+        <div>
+          <button type="submit">Add Note</button>
+        </div>
+       
+      </form>
+    </div>
+    <div class="goback">
+      <a href="/" class="btn">See your notes</a>
+    </div>
+  </body>
+</html>
