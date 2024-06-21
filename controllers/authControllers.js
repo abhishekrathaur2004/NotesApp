@@ -6,34 +6,31 @@ import { generateToken } from "../utility/tokenGenerating.js";
 const signupController = async (req, res) => {
   try {
     const { email, password ,cnfpassword} = req.body;
-
   
-    if (!email || !password) {
+    if (!email || !password || !cnfpassword) {
       return res.status(400).json({
         success: false,
         ok: false,
         error: "Input fields missing",
       });
     }
-
-    const checkUserExisting = await User.findOne({ email });
-    // if user found then we have to return user already exist
-    if (checkUserExisting) {
-      // return res.status(400).json({
-      //   success: false,
-      //   ok: false,
-      //   error: "User already exist",
-      // });
-      return res.render("auth/register", {
-        message: "User already exist",
-      });
-    }
-
+    //checking if password and confirm password is not same.
     if(password !== cnfpassword){
       return res.render("auth/register", {
         message: "Password and Confirm Password is not same",
       });
     }
+
+    const checkUserExisting = await User.findOne({ email });
+    // if user found then we have to return user already exist
+    if (checkUserExisting) {
+      
+      return res.render("auth/register", {
+        message: "User already exist",
+      });
+    }
+
+    
     // user not found saving it
     const hashedPassword = await hashingPassword(password);
     const newUser = new User({
@@ -42,14 +39,10 @@ const signupController = async (req, res) => {
     });
     await newUser.save();
 
-    // res.status(201).json({
-    //   success: true,
-    //   ok: true,
-    //   message: "User registered successfully!",
-    // });
+
     res.redirect("login");
   } catch (error) {
-    // console.log(`Error while Registering : ${error}`);
+
     res.status(500).json({
       success: false,
       ok: false,
@@ -57,7 +50,7 @@ const signupController = async (req, res) => {
       error,
     });
   }
-  // console.log('Auth Register Route');
+
 };
 const loginController = async (req, res) => {
   try {
@@ -71,23 +64,21 @@ const loginController = async (req, res) => {
       });
     }
     const isValidUser = await checkPassword(email, password);
-    // console.log(isValidUser);
+    
+    // if user is not registerd or password is wrong
     if (!isValidUser.success) {
-      // return res.status(401).json({
-      //   success: false,
-      //   ok: false,
-      //   message: "Wrong email or password",
-      // });
+      
       return res.render("auth/login", {
         message: isValidUser.msg,
       });
     }
-    
+
   
-    
+    // creating token for one hour
+
     const token = await generateToken(email);
-    const oneDays = 1 * 24 * 60 * 60 * 1000;
-    res.cookie("token", token, { maxAge: oneDays });
+    const oneHour = 1* 60 * 60 * 1000;
+    res.cookie("token", token, { maxAge: oneHour });
     res.redirect("../notes");
   } catch (error) {
     res

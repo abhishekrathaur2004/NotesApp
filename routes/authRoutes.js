@@ -5,6 +5,8 @@ const Router = express.Router();
 Router.post("/login", loginController);
 Router.post("/register",signupController);
 
+
+// checking if session is not expired
 Router.get("/login",(req,res)=>{
     const token = req.cookies.token;
     if(token){
@@ -16,7 +18,6 @@ Router.get("/logout" ,(req,res)=>{
 
     const token = req.cookies.token;
     if(!token){
-     
         return res.redirect('/api/v1/notes');
     }
     try {

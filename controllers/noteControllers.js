@@ -1,16 +1,15 @@
 import Note from "../models/note.js";
 
+// get all notes
 const getAllNotes = async (req, res) => {
   const userId = req.user._id;
-
   try {
     const notes = await Note.find({ userId: userId });
     res.render("notes/index", {
       notes: notes,
-      user_email: req.user.email 
+      user_email: req.user.email,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       success: false,
       ok: false,
@@ -18,11 +17,12 @@ const getAllNotes = async (req, res) => {
     });
   }
 };
+
+// get single note and redirect it to view single note
 const getSingleNote = async (req, res) => {
   const noteId = req.params.noteid;
-  
   const user = req.user;
- 
+
   try {
     if (!noteId) {
       return res.status(400).json({
@@ -31,9 +31,9 @@ const getSingleNote = async (req, res) => {
         message: "NoteId Missing",
       });
     }
-    
+
     const note = await Note.findById(noteId);
-   
+
     if (!note) {
       return res.status(404).json({
         ok: false,
@@ -41,30 +41,20 @@ const getSingleNote = async (req, res) => {
         message: "Note not found at this id",
       });
     }
-    // console.log('----',note kuc der k liue);
-    
+
+    // checking if the authorised user is trying to access or not
     if (note.userId.toString() !== user._id.toString()) {
-      
       return res.status(403).json({
         ok: false,
         success: false,
         message: "Unauthorised user cannot acess this note",
       });
     }
-      // }
-      
-      // return res.status(200).json({
-      //     ok : true,
-      //     success : true,
-      //     message: "Note deleted successfully.",
-      //     note : note
-      // })
-      
-      return res.render(`notes/note`, {
-        note: note,
-      });
-    }
-   catch (error) {
+
+    return res.render(`notes/note`, {
+      note: note,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       ok: false,
@@ -73,11 +63,12 @@ const getSingleNote = async (req, res) => {
     });
   }
 };
+
+// handling edit single note request
 const getEditSingleNote = async (req, res) => {
   const noteId = req.params.noteid;
-  
   const user = req.user;
- 
+
   try {
     if (!noteId) {
       return res.status(400).json({
@@ -86,9 +77,9 @@ const getEditSingleNote = async (req, res) => {
         message: "NoteId Missing",
       });
     }
-    
+
     const note = await Note.findById(noteId);
-   
+
     if (!note) {
       return res.status(404).json({
         ok: false,
@@ -96,30 +87,19 @@ const getEditSingleNote = async (req, res) => {
         message: "Note not found at this id",
       });
     }
-    // console.log('----',note kuc der k liue);
-    
+
     if (note.userId.toString() !== user._id.toString()) {
-      
       return res.status(403).json({
         ok: false,
         success: false,
         message: "Unauthorised user cannot acess this note",
       });
     }
-      // }
-      
-      // return res.status(200).json({
-      //     ok : true,
-      //     success : true,
-      //     message: "Note deleted successfully.",
-      //     note : note
-      // })
-      
-      return res.render(`notes/edit`, {
-        note: note,
-      });
-    }
-   catch (error) {
+
+    return res.render(`notes/edit`, {
+      note: note,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       ok: false,
@@ -128,20 +108,16 @@ const getEditSingleNote = async (req, res) => {
     });
   }
 };
+
+// creating notes
 const createNotes = async (req, res) => {
   const { title, content } = req.body;
   const user = req.user;
-  // console.log(user);
-  
+
   if (!title.trim() || !content.trim()) {
-    // return res.status(400).json({
-    //   success: false,
-    //   ok: false,
-    //   error: "Input fields missing",
-    // });
-    return  res.render('notes/create', {
-      message: "Title or Content missing"
-    })
+    return res.render("notes/create", {
+      message: "Title or Content missing",
+    });
   }
 
   try {
@@ -152,15 +128,10 @@ const createNotes = async (req, res) => {
       createdAt: Date.now(),
     });
     await newNotes.save();
-    // res.status(201).json({
-    //   success: true,
-    //   ok: true,
-    //   message: "New notes created successfully!",
-    //   notes: newNotes,
-    // });
-    return res.render('notes/create', {
-      message: "New Note Created Successfully."
-    })
+
+    return res.render("notes/create", {
+      message: "New Note Created Successfully.",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -171,9 +142,11 @@ const createNotes = async (req, res) => {
   }
 };
 
+// deletenote
 const deleteNote = async (req, res) => {
   const noteId = req.params.noteid;
   const user = req.user;
+
   try {
     if (!noteId) {
       return res.status(400).json({
@@ -182,23 +155,19 @@ const deleteNote = async (req, res) => {
         message: "NoteId Missing",
       });
     }
-    const note = await Note.findById(noteId);
-    if (!note) {
-      return res.status(404).json({
-        ok: false,
-        success: false,
-        message: "Note not found at this id",
-      });
-    }
-    // console.log('----',note);
-    if (note.userId.toString() !== user._id.toString()) {
-      return res.status(403).json({
-        ok: false,
-        success: false,
-        message: "Unauthorised user cannot delete this note",
-      });
-    }
 
+    // Check if the note exists and belongs to the user
+    const note = await Note.findByIdAndDelete({
+      _id: noteId,
+      userId: user._id,
+    });
+    if (!note) {
+      return res.json({
+        ok: false,
+        success: false,
+        message: "Unauthorized cannot delete it",
+      });
+    }
     await Note.deleteOne({ _id: noteId });
     return res.status(200).json({
       ok: true,
@@ -216,10 +185,9 @@ const deleteNote = async (req, res) => {
   }
 };
 const updateNotes = async (req, res) => {
-  // console.log('req aai');
   const noteId = req.params.noteid;
   const user = req.user;
-  // console.log(noteId);
+
   const { title, content } = req.body;
   try {
     if (!noteId) {
@@ -229,42 +197,41 @@ const updateNotes = async (req, res) => {
         message: "NoteId Missing",
       });
     }
-    if(!title.trim() || !content.trim()){
+    if (!title.trim() || !content.trim()) {
       return res.status(400).json({
         ok: false,
         success: false,
         message: "Title or content missing",
       });
     }
-    const note = await Note.findById(noteId);
-    if (!note) {
+    const note = await Note.findByIdAndUpdate({ _id: noteId, userId: user._id },{
+      title: title,
+      content:content
+    });
+    if(!note){
       return res.status(404).json({
         ok: false,
-        success: false,
-        message: "Note not found at this id",
-      });
+        success:false,
+        message:'Unauthorised user cannot access it.'
+      })
     }
-    if(note.userId.toString() !== user._id.toString()){
-        return res.status(403).json({
-            ok : false,
-            success : false,
-            message: "Unauthorised user cannot update this note"
-        })
-    }
-    // Update the note fields
-    note.title = title ;
-    note.content = content ;
-
-    // Save the updated note
-    const updatedNote = await note.save();
-
     return res.status(200).json({
       ok: true,
-      success: true,
-      message: "Notes updated successfully.",
-      data: updatedNote,
+      success:true,
+      message:'Note updated successfully'
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internall servr error",
+      error: error,
     });
-    // return res.redirect('notes/index')
-  } catch (error) {}
+  }
 };
-export { getAllNotes, createNotes, deleteNote, updateNotes,getSingleNote, getEditSingleNote };
+export {
+  getAllNotes,
+  createNotes,
+  deleteNote,
+  updateNotes,
+  getSingleNote,
+  getEditSingleNote,
+};

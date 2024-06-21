@@ -38,7 +38,7 @@ connectDB();
 // routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/notes", verifyUser, noteRoutes);
-// app.use("/api/v1/notes", noteRoutes);
+
 
 
 app.get('/', (req,res)=>{
